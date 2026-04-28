@@ -132,7 +132,7 @@
   .time-done-btn.done { border-color: var(--green2); color: var(--green2); background: var(--green-dim); }
   .add-time-row { display: flex; gap: 0.6rem; margin-bottom: 1rem; align-items: center; flex-wrap: wrap; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 0.8rem 1rem; }
   .add-time-row span { color: var(--text3); font-size: 0.8rem; }
-  .time-input { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem 0.5rem; font-size: 0.78rem; color: var(--text); font-family: 'DM Mono', monospace; outline: none; transition: border-color 0.2s; appearance: none; -webkit-appearance: none; cursor: pointer; text-align: center; }
+  .time-input { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem 0.7rem; font-size: 0.82rem; color: var(--text); font-family: 'DM Mono', monospace; outline: none; transition: border-color 0.2s; text-align: center; }
   .time-input:focus { border-color: var(--gold); }
   .timetable-empty { text-align: center; padding: 2.5rem 1rem; color: var(--text3); font-size: 0.82rem; background: var(--card); border: 1px dashed var(--border); border-radius: 8px; }
 
@@ -332,9 +332,9 @@
       <button class="week-tab" onclick="selectWeekDay(6,this)">일</button>
     </div>
     <div class="add-time-row">
-      <select class="time-input" id="time-start" style="width:80px;"></select>
+      <input class="time-input" id="time-start" type="text" placeholder="09:00" maxlength="5" inputmode="numeric" style="width:72px;text-align:center;" />
       <span>~</span>
-      <select class="time-input" id="time-end" style="width:80px;"></select>
+      <input class="time-input" id="time-end" type="text" placeholder="10:00" maxlength="5" inputmode="numeric" style="width:72px;text-align:center;" />
       <input class="add-input" id="time-subject" placeholder="과목 / 내용" style="flex:1;min-width:120px;" />
       <button class="add-btn" onclick="addTimeBlock()">+ 추가</button>
     </div>
@@ -437,7 +437,7 @@ window.showSection = (id, btn) => {
 // ── 진도표 내부 네비게이션 ──
 const TRACKER_VIEWS = ['main','lecture','concept','memo','choice','case'];
 
-function showTrackerMain() {
+window.showTrackerMain = function showTrackerMain() {
   TRACKER_VIEWS.forEach(v => {
     const el = document.getElementById('tracker-view-' + v);
     if (el) el.style.display = v === 'main' ? 'block' : 'none';
@@ -793,21 +793,6 @@ window.addSubject = (type) => {
 };
 
 // ── 요일별 시간표 ──
-function init24hSelects() {
-  ['time-start','time-end'].forEach((id, idx) => {
-    const sel = document.getElementById(id);
-    if (!sel) return;
-    const options = [];
-    for (let h = 0; h < 24; h++) {
-      for (let m = 0; m < 60; m += 30) {
-        const val = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-        options.push(`<option value="${val}" ${val === (idx===0?'09:00':'10:00') ? 'selected' : ''}>${val}</option>`);
-      }
-    }
-    sel.innerHTML = options.join('');
-  });
-}
-
 function initWeekTabs() {
   const now = new Date();
   // JS getDay(): 0=일,1=월,...,6=토 → 우리 인덱스: 0=월,...,6=일
@@ -820,8 +805,6 @@ function initWeekTabs() {
     if (i === todayIdx) tab.classList.add('today');
     if (i === todayIdx) tab.classList.add('active');
   });
-
-  init24hSelects();
 }
 
 window.selectWeekDay = (dayIdx, btn) => {
@@ -855,14 +838,27 @@ function renderWeekDay(dayIdx) {
 function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 window.addTimeBlock = () => {
-  const start = document.getElementById('time-start').value;
-  const end   = document.getElementById('time-end').value;
-  const subject = document.getElementById('time-subject').value.trim();
-  if (!start || !end) { showToast('시작/종료 시간을 입력해 주세요'); return; }
+  const startRaw = document.getElementById('time-start').value.trim();
+  const endRaw   = document.getElementById('time-end').value.trim();
+  const subject  = document.getElementById('time-subject').value.trim();
+
+  // HH:MM 형식 검증
+  const timeRe = /^([01]?\d|2[0-3]):([0-5]\d)$/;
+  if (!timeRe.test(startRaw) || !timeRe.test(endRaw)) {
+    showToast('시간을 HH:MM 형식으로 입력해 주세요 (예: 09:00)');
+    return;
+  }
+  // 두 자리로 정규화
+  const norm = t => { const [h,m] = t.split(':'); return `${h.padStart(2,'0')}:${m}`; };
+  const start = norm(startRaw);
+  const end   = norm(endRaw);
+
+  if (start >= end) { showToast('종료 시간이 시작 시간보다 늦어야 해요'); return; }
   if (!state.weekly[currentWeekDay]) state.weekly[currentWeekDay] = [];
   state.weekly[currentWeekDay].push({ start, end, subject, note: '' });
-  // 시간 순 정렬
   state.weekly[currentWeekDay].sort((a,b) => a.start.localeCompare(b.start));
+  document.getElementById('time-start').value = '';
+  document.getElementById('time-end').value = '';
   document.getElementById('time-subject').value = '';
   renderWeekDay(currentWeekDay); scheduleSave();
   showToast(`${DAY_NAMES[currentWeekDay]}요일 ${start}~${end} 추가됐어요`);
