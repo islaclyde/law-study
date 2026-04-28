@@ -132,7 +132,7 @@
   .time-done-btn.done { border-color: var(--green2); color: var(--green2); background: var(--green-dim); }
   .add-time-row { display: flex; gap: 0.6rem; margin-bottom: 1rem; align-items: center; flex-wrap: wrap; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 0.8rem 1rem; }
   .add-time-row span { color: var(--text3); font-size: 0.8rem; }
-  .time-input { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem 0.7rem; font-size: 0.78rem; color: var(--text); font-family: 'DM Mono', monospace; outline: none; width: 110px; transition: border-color 0.2s; }
+  .time-input { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem 0.5rem; font-size: 0.78rem; color: var(--text); font-family: 'DM Mono', monospace; outline: none; transition: border-color 0.2s; appearance: none; -webkit-appearance: none; cursor: pointer; text-align: center; }
   .time-input:focus { border-color: var(--gold); }
   .timetable-empty { text-align: center; padding: 2.5rem 1rem; color: var(--text3); font-size: 0.82rem; background: var(--card); border: 1px dashed var(--border); border-radius: 8px; }
 
@@ -162,6 +162,22 @@
   .ov-label { font-size: 0.7rem; color: var(--text3); }
   .ov-bar { margin-top: 0.6rem; height: 3px; background: var(--border); border-radius: 100px; overflow: hidden; }
   .ov-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold2)); border-radius: 100px; transition: width 0.6s; }
+
+  /* Tracker overview (new) */
+  .tracker-overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .tracker-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.3rem 1.2rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .tracker-card:hover { border-color: var(--gold); box-shadow: 0 2px 12px rgba(139,105,20,0.12); transform: translateY(-1px); }
+  .tracker-card-icon { font-size: 1.4rem; margin-bottom: 0.6rem; }
+  .tracker-card-name { font-size: 0.82rem; font-weight: 600; color: var(--text); margin-bottom: 0.8rem; }
+  .tracker-card-bar { height: 4px; background: var(--border); border-radius: 100px; overflow: hidden; margin-bottom: 0.5rem; }
+  .tracker-card-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold2)); border-radius: 100px; transition: width 0.5s; }
+  .tracker-card-fill.fill2 { background: linear-gradient(90deg, var(--text2), var(--text3)); }
+  .tracker-card-stats { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--text3); display: flex; justify-content: space-between; }
+  .tracker-card-pct { font-family: 'DM Mono', monospace; font-size: 1.3rem; font-weight: 500; color: var(--gold); margin-bottom: 0.4rem; }
+
+  /* Back button */
+  .tracker-back-btn { background: none; border: 1px solid var(--border); color: var(--text2); border-radius: 6px; padding: 0.35rem 0.8rem; font-size: 0.75rem; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all 0.2s; }
+  .tracker-back-btn:hover { border-color: var(--gold); color: var(--gold); }
 
   /* Toast */
   .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--bg2); border: 1px solid var(--gold); color: var(--gold); padding: 0.7rem 1.2rem; border-radius: 6px; font-size: 0.78rem; font-family: 'Noto Sans KR', sans-serif; opacity: 0; transform: translateY(10px); transition: all 0.3s; z-index: 1000; pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
@@ -195,12 +211,8 @@
 
 <nav>
   <button class="nav-btn active" onclick="showSection('checklist',this)">✅ 오늘 할 일</button>
-  <button class="nav-btn" onclick="showSection('lecture',this)">강의</button>
-    <button class="nav-btn" onclick="showSection('concept',this)">개념서</button>
-  <button class="nav-btn" onclick="showSection('memo',this)">암기장</button>
-  <button class="nav-btn" onclick="showSection('choice',this)">선택형</button>
-  <button class="nav-btn" onclick="showSection('case',this)">사례형</button>
-  <button class="nav-btn" onclick="showSection('daily',this)">시간표</button>
+  <button class="nav-btn" onclick="showSection('tracker',this)">📊 진도표</button>
+  <button class="nav-btn" onclick="showSection('daily',this)">🗓️ 시간표</button>
 </nav>
 
 <main>
@@ -234,48 +246,77 @@
     </div>
   </div>
 
-  <!-- ── 인강 진도표 (해빗 트래커) ── -->
-  <div class="section" id="section-lecture">
-    <div class="section-header"><div><div class="section-title">🎧 인강 진도표</div></div></div>
-    <div id="lecture-progress-bars"></div>
-    <div class="lecture-add-row">
-      <input class="add-input" id="lecture-name-input" placeholder="강의 이름 (예: 민법 기본강의)" style="flex:2;" />
-      <input class="lec-count-input" id="lecture-count-input" type="number" min="1" max="300" placeholder="강의 수" />
-      <button class="add-btn" onclick="addLectureCourse()">+ 강의 추가</button>
+  <!-- ── 진도표 (통합) ── -->
+  <div class="section" id="section-tracker">
+
+    <!-- 전체현황 메인 뷰 -->
+    <div id="tracker-view-main">
+      <div class="section-header">
+        <div class="section-title">📊 진도표</div>
+      </div>
+      <div class="tracker-overview-grid" id="trackerOverviewGrid"></div>
     </div>
-    <div id="lecture-courses"></div>
-  </div>
 
-  <!-- ── 선택형 진도표 ── -->
-  <div class="section" id="section-choice">
-    <div class="section-header"><div><div class="section-title">📝 선택형 진도표</div></div></div>
-    <div id="choice-progress-bars"></div>
-    <div class="add-subject-row"><input class="add-input" id="choice-subj-input" placeholder="과목명 (예: 헌법)" /><button class="add-btn" onclick="addSubject('choice')">+ 과목 추가</button></div>
-    <div id="choice-groups"></div>
-  </div>
+    <!-- 강의 서브 뷰 -->
+    <div id="tracker-view-lecture" style="display:none;">
+      <div class="section-header">
+        <button class="tracker-back-btn" onclick="showTrackerMain()">← 돌아가기</button>
+        <div class="section-title">🎧 인강 진도표</div>
+        <div></div>
+      </div>
+      <div id="lecture-progress-bars"></div>
+      <div class="lecture-add-row">
+        <input class="add-input" id="lecture-name-input" placeholder="강의 이름 (예: 민법 기본강의)" style="flex:2;" />
+        <input class="lec-count-input" id="lecture-count-input" type="number" min="1" max="300" placeholder="강의 수" />
+        <button class="add-btn" onclick="addLectureCourse()">+ 강의 추가</button>
+      </div>
+      <div id="lecture-courses"></div>
+    </div>
 
-  <!-- ── 사례형 진도표 ── -->
-  <div class="section" id="section-case">
-    <div class="section-header"><div><div class="section-title">⚖️ 사례형 진도표</div></div></div>
-    <div id="case-progress-bars"></div>
-    <div class="add-subject-row"><input class="add-input" id="case-subj-input" placeholder="과목명 (예: 형법)" /><button class="add-btn" onclick="addSubject('case')">+ 과목 추가</button></div>
-    <div id="case-groups"></div>
-  </div>
+    <!-- 개념서 서브 뷰 -->
+    <div id="tracker-view-concept" style="display:none;">
+      <div class="section-header">
+        <button class="tracker-back-btn" onclick="showTrackerMain()">← 돌아가기</button>
+        <div class="section-title">📖 개념서 진도표</div>
+        <div></div>
+      </div>
+      <div class="add-subject-row"><input class="add-input" id="concept-subj-input" placeholder="과목명 (예: 민소법)" /><button class="add-btn" onclick="addSubject('concept')">+ 과목 추가</button></div>
+      <div id="concept-groups"></div>
+    </div>
 
-  <!-- ── 개념서 정독 ── -->
-  <div class="section" id="section-concept">
-    <div class="section-header"><div><div class="section-title">📖 개념서 정독 진도표</div></div></div>
-    <div id="concept-progress-bars"></div>
-    <div class="add-subject-row"><input class="add-input" id="concept-subj-input" placeholder="과목명 (예: 민소법)" /><button class="add-btn" onclick="addSubject('concept')">+ 과목 추가</button></div>
-    <div id="concept-groups"></div>
-  </div>
+    <!-- 암기장 서브 뷰 -->
+    <div id="tracker-view-memo" style="display:none;">
+      <div class="section-header">
+        <button class="tracker-back-btn" onclick="showTrackerMain()">← 돌아가기</button>
+        <div class="section-title">🧠 암기장 진도표</div>
+        <div></div>
+      </div>
+      <div class="add-subject-row"><input class="add-input" id="memo-subj-input" placeholder="과목명 (예: 형소법)" /><button class="add-btn" onclick="addSubject('memo')">+ 과목 추가</button></div>
+      <div id="memo-groups"></div>
+    </div>
 
-  <!-- ── 암기장 정독 ── -->
-  <div class="section" id="section-memo">
-    <div class="section-header"><div><div class="section-title">🧠 암기장 정독 진도표</div></div></div>
-    <div id="memo-progress-bars"></div>
-    <div class="add-subject-row"><input class="add-input" id="memo-subj-input" placeholder="과목명 (예: 형소법)" /><button class="add-btn" onclick="addSubject('memo')">+ 과목 추가</button></div>
-    <div id="memo-groups"></div>
+    <!-- 선택형 서브 뷰 -->
+    <div id="tracker-view-choice" style="display:none;">
+      <div class="section-header">
+        <button class="tracker-back-btn" onclick="showTrackerMain()">← 돌아가기</button>
+        <div class="section-title">📝 선택형 진도표</div>
+        <div></div>
+      </div>
+      <div class="add-subject-row"><input class="add-input" id="choice-subj-input" placeholder="과목명 (예: 헌법)" /><button class="add-btn" onclick="addSubject('choice')">+ 과목 추가</button></div>
+      <div id="choice-groups"></div>
+    </div>
+
+    <!-- 사례형 서브 뷰 -->
+    <div id="tracker-view-case" style="display:none;">
+      <div class="section-header">
+        <button class="tracker-back-btn" onclick="showTrackerMain()">← 돌아가기</button>
+        <div class="section-title">⚖️ 사례형 진도표</div>
+        <div></div>
+      </div>
+      <div class="add-subject-row"><input class="add-input" id="case-subj-input" placeholder="과목명 (예: 형법)" /><button class="add-btn" onclick="addSubject('case')">+ 과목 추가</button></div>
+      <div id="case-groups"></div>
+    </div>
+
   </div>
 
   <!-- ── 요일별 시간표 ── -->
@@ -291,9 +332,9 @@
       <button class="week-tab" onclick="selectWeekDay(6,this)">일</button>
     </div>
     <div class="add-time-row">
-      <input class="time-input" id="time-start" type="time" value="09:00" />
+      <select class="time-input" id="time-start" style="width:80px;"></select>
       <span>~</span>
-      <input class="time-input" id="time-end" type="time" value="10:00" />
+      <select class="time-input" id="time-end" style="width:80px;"></select>
       <input class="add-input" id="time-subject" placeholder="과목 / 내용" style="flex:1;min-width:120px;" />
       <button class="add-btn" onclick="addTimeBlock()">+ 추가</button>
     </div>
@@ -351,6 +392,7 @@ onSnapshot(docRef, (snap) => {
     renderLectures();
     TRACKER_KEYS.forEach(renderSection);
     renderWeekDay(currentWeekDay);
+    renderTrackerOverview();
   }
   if (firstLoad) {
     firstLoad = false;
@@ -389,7 +431,78 @@ window.showSection = (id, btn) => {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('section-' + id).classList.add('active');
   btn.classList.add('active');
+  if (id === 'tracker') renderTrackerOverview();
 };
+
+// ── 진도표 내부 네비게이션 ──
+const TRACKER_VIEWS = ['main','lecture','concept','memo','choice','case'];
+
+function showTrackerMain() {
+  TRACKER_VIEWS.forEach(v => {
+    const el = document.getElementById('tracker-view-' + v);
+    if (el) el.style.display = v === 'main' ? 'block' : 'none';
+  });
+  renderTrackerOverview();
+}
+
+window.showTrackerSub = (sub) => {
+  TRACKER_VIEWS.forEach(v => {
+    const el = document.getElementById('tracker-view-' + v);
+    if (el) el.style.display = v === sub ? 'block' : 'none';
+  });
+};
+
+function renderTrackerOverview() {
+  const grid = document.getElementById('trackerOverviewGrid');
+  if (!grid) return;
+
+  // 인강
+  const lecs = state.lectures || [];
+  let lecTotal = 0, lecDone = 0;
+  lecs.forEach(c => { lecTotal += c.total||0; lecDone += (c.done||[]).filter(Boolean).length; });
+  const lecPct = lecTotal ? Math.round(lecDone/lecTotal*100) : 0;
+
+  const cards = [
+    { key:'lecture', icon:'🎧', name:'인강', pct1: lecPct, cnt: `${lecDone}/${lecTotal} 강`, type:'lecture' },
+  ];
+
+  const labels = { concept:'📖 개념서', memo:'🧠 암기장', choice:'📝 선택형', case:'⚖️ 사례형' };
+  const icons  = { concept:'📖', memo:'🧠', choice:'📝', case:'⚖️' };
+  const names  = { concept:'개념서', memo:'암기장', choice:'선택형', case:'사례형' };
+
+  TRACKER_KEYS.forEach(type => {
+    const groups = state[type] || [];
+    let total=0, done1=0, done2=0;
+    groups.forEach(g => {
+      total += g.items.length;
+      done1 += g.items.filter(i=>i.done).length;
+      done2 += g.items.filter(i=>i.done2).length;
+    });
+    const pct1 = total ? Math.round(done1/total*100) : 0;
+    const pct2 = total ? Math.round(done2/total*100) : 0;
+    cards.push({ key:type, icon:icons[type], name:names[type], pct1, pct2, cnt1:`1회 ${done1}/${total}`, cnt2:`2회 ${done2}/${total}`, type });
+  });
+
+  grid.innerHTML = cards.map(c => {
+    if (c.key === 'lecture') {
+      return `<div class="tracker-card" onclick="showTrackerSub('lecture')">
+        <div class="tracker-card-icon">${c.icon}</div>
+        <div class="tracker-card-name">${c.name}</div>
+        <div class="tracker-card-pct">${c.pct1}<span style="font-size:0.85rem">%</span></div>
+        <div class="tracker-card-bar"><div class="tracker-card-fill" style="width:${c.pct1}%"></div></div>
+        <div class="tracker-card-stats"><span>${c.cnt}</span></div>
+      </div>`;
+    }
+    return `<div class="tracker-card" onclick="showTrackerSub('${c.type}')">
+      <div class="tracker-card-icon">${c.icon}</div>
+      <div class="tracker-card-name">${c.name}</div>
+      <div class="tracker-card-pct">${c.pct1}<span style="font-size:0.85rem">%</span></div>
+      <div class="tracker-card-bar" style="margin-bottom:4px;"><div class="tracker-card-fill" style="width:${c.pct1}%"></div></div>
+      <div class="tracker-card-bar"><div class="tracker-card-fill fill2" style="width:${c.pct2||0}%"></div></div>
+      <div class="tracker-card-stats"><span style="color:var(--gold)">${c.cnt1}</span><span>${c.cnt2}</span></div>
+    </div>`;
+  }).join('');
+}
 
 // ── 체크리스트 ──
 function renderChecklist() {
@@ -488,31 +601,14 @@ function renderTodayTimetable() {
 // ── 인강 해빗 트래커 ──
 function renderLectures() {
   const container = document.getElementById('lecture-courses');
-  const barsContainer = document.getElementById('lecture-progress-bars');
   if (!container) return;
   const courses = state.lectures || [];
   container.innerHTML = '';
 
-  // 과목별 진도바 렌더링
-  if (barsContainer) {
-    if (courses.length === 0) {
-      barsContainer.innerHTML = '';
-    } else {
-      barsContainer.innerHTML = courses.map(course => {
-        const total = course.total || 0;
-        const doneCnt = (course.done || []).filter(Boolean).length;
-        const pct = total ? Math.round(doneCnt/total*100) : 0;
-        return `<div class="progress-wrap" style="margin-bottom:0.6rem;">
-          <div class="progress-label"><span>${course.name}</span><span class="progress-pct">${pct}%</span></div>
-          <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-          <div style="font-size:0.65rem;color:var(--text3);margin-top:0.3rem;font-family:'DM Mono',monospace;">${doneCnt}/${total} 강</div>
-        </div>`;
-      }).join('');
-    }
-  }
   courses.forEach((course, ci) => {
     const total = course.total || 0;
     const doneCnt = (course.done || []).filter(Boolean).length;
+    const pct = total ? Math.round(doneCnt/total*100) : 0;
 
     const div = document.createElement('div');
     div.className = 'lecture-course';
@@ -524,9 +620,17 @@ function renderLectures() {
 
     div.innerHTML = `
       <div class="lecture-course-header" onclick="toggleLectureCourse(this)">
-        <div class="lecture-course-name">
-          ${course.name}
-          <span class="lecture-course-badge">${doneCnt}/${total}</span>
+        <div style="flex:1;min-width:0;">
+          <div class="lecture-course-name" style="margin-bottom:0.4rem;">
+            ${course.name}
+            <span class="lecture-course-badge">${doneCnt}/${total}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.5rem;">
+            <span style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--gold);width:28px;">${pct}%</span>
+            <div style="flex:1;height:4px;background:var(--border);border-radius:100px;overflow:hidden;">
+              <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:100px;transition:width 0.5s;"></div>
+            </div>
+          </div>
         </div>
         <div class="lecture-course-right">
           <button class="lecture-del-btn" onclick="event.stopPropagation();delLectureCourse(${ci})">삭제</button>
@@ -555,7 +659,7 @@ window.addLectureCourse = () => {
 window.toggleLectureDot = (ci, k) => {
   if (!state.lectures[ci].done) state.lectures[ci].done = [];
   state.lectures[ci].done[k] = !state.lectures[ci].done[k];
-  renderLectures(); scheduleSave();
+  renderLectures(); renderTrackerOverview(); scheduleSave();
   showToast(state.lectures[ci].done[k] ? `${k+1}강 완료!` : `${k+1}강 취소`);
 };
 
@@ -577,40 +681,42 @@ window.delLectureCourse = (ci) => {
 function renderSection(type) {
   const groups = state[type] || [];
   const container = document.getElementById(type + '-groups');
-  const barsContainer = document.getElementById(type + '-progress-bars');
   if (!container) return;
   container.innerHTML = '';
-
-  // 과목별 진도바 렌더링
-  if (barsContainer) {
-    if (groups.length === 0) {
-      barsContainer.innerHTML = '';
-    } else {
-      barsContainer.innerHTML = groups.map(group => {
-        const total = group.items.length;
-        const done1 = group.items.filter(i => i.done).length;
-        const done2 = group.items.filter(i => i.done2).length;
-        const pct1 = total ? Math.round(done1/total*100) : 0;
-        const pct2 = total ? Math.round(done2/total*100) : 0;
-        return `<div class="progress-wrap" style="margin-bottom:0.6rem;">
-          <div class="progress-label"><span>${group.name}</span><span style="display:flex;gap:0.8rem;font-family:'DM Mono',monospace;font-size:0.72rem;"><span style="color:var(--gold)">1회독 ${pct1}%</span><span style="color:var(--text3)">2회독 ${pct2}%</span></span></div>
-          <div class="progress-bar" style="height:5px;margin-bottom:3px;"><div class="progress-fill" style="width:${pct1}%"></div></div>
-          <div class="progress-bar" style="height:3px;background:var(--border);border-radius:100px;overflow:hidden;"><div style="height:100%;width:${pct2}%;background:linear-gradient(90deg,var(--text2),var(--text3));border-radius:100px;transition:width 0.5s;"></div></div>
-        </div>`;
-      }).join('');
-    }
-  }
 
   groups.forEach((group, gi) => {
     const done1 = group.items.filter(i => i.done).length;
     const done2 = group.items.filter(i => i.done2).length;
     const total = group.items.length;
+    const pct1 = total ? Math.round(done1/total*100) : 0;
+    const pct2 = total ? Math.round(done2/total*100) : 0;
     const div = document.createElement('div');
     div.className = 'subject-group';
     div.innerHTML = `
       <div class="subject-title-row" onclick="toggleGroup(this)">
-        <div class="subject-name">${group.name}<span class="subject-badge">1회 ${done1}/${total} · 2회 ${done2}/${total}</span></div>
-        <span class="subject-chevron open">▼</span>
+        <div style="flex:1;min-width:0;">
+          <div class="subject-name" style="margin-bottom:0.45rem;">
+            ${group.name}
+            <span class="subject-badge">1회 ${done1}/${total} · 2회 ${done2}/${total}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:3px;">
+            <div style="display:flex;align-items:center;gap:0.5rem;">
+              <span style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--gold);width:28px;">${pct1}%</span>
+              <div style="flex:1;height:4px;background:var(--border);border-radius:100px;overflow:hidden;">
+                <div style="height:100%;width:${pct1}%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:100px;transition:width 0.5s;"></div>
+              </div>
+              <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--text3);width:28px;text-align:right;">1회</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem;">
+              <span style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--text3);width:28px;">${pct2}%</span>
+              <div style="flex:1;height:3px;background:var(--border);border-radius:100px;overflow:hidden;">
+                <div style="height:100%;width:${pct2}%;background:linear-gradient(90deg,var(--text2),var(--text3));border-radius:100px;transition:width 0.5s;"></div>
+              </div>
+              <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--text3);width:28px;text-align:right;">2회</span>
+            </div>
+          </div>
+        </div>
+        <span class="subject-chevron open" style="margin-left:0.8rem;">▼</span>
       </div>
       <div class="items-list">
         <div class="item-row" style="background:var(--bg3);padding:0.4rem 1rem;border-bottom:1px solid var(--border);">
@@ -658,12 +764,12 @@ window.toggleItem = (type, gi, ii, round) => {
     item.done = !item.done;
     showToast(item.done ? '✓ 1회독 완료!' : '1회독 체크 해제');
   }
-  renderSection(type); scheduleSave();
+  renderSection(type); renderTrackerOverview(); scheduleSave();
 };
 
 window.delItem = (type, gi, ii) => {
   state[type][gi].items.splice(ii,1);
-  renderSection(type); scheduleSave();
+  renderSection(type); renderTrackerOverview(); scheduleSave();
 };
 
 window.addItem = (type, gi) => {
@@ -671,7 +777,7 @@ window.addItem = (type, gi) => {
   const label = inp.value.trim();
   if (!label) return;
   state[type][gi].items.push({label, done:false, done2:false});
-  renderSection(type); scheduleSave();
+  renderSection(type); renderTrackerOverview(); scheduleSave();
   showToast('항목이 추가됐어요');
 };
 
@@ -687,6 +793,21 @@ window.addSubject = (type) => {
 };
 
 // ── 요일별 시간표 ──
+function init24hSelects() {
+  ['time-start','time-end'].forEach((id, idx) => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const options = [];
+    for (let h = 0; h < 24; h++) {
+      for (let m = 0; m < 60; m += 30) {
+        const val = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+        options.push(`<option value="${val}" ${val === (idx===0?'09:00':'10:00') ? 'selected' : ''}>${val}</option>`);
+      }
+    }
+    sel.innerHTML = options.join('');
+  });
+}
+
 function initWeekTabs() {
   const now = new Date();
   // JS getDay(): 0=일,1=월,...,6=토 → 우리 인덱스: 0=월,...,6=일
@@ -699,6 +820,8 @@ function initWeekTabs() {
     if (i === todayIdx) tab.classList.add('today');
     if (i === todayIdx) tab.classList.add('active');
   });
+
+  init24hSelects();
 }
 
 window.selectWeekDay = (dayIdx, btn) => {
