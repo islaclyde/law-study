@@ -89,7 +89,7 @@
   .add-btn:hover { background: var(--gold); color: #fff; }
   .add-subject-row { display: flex; gap: 0.6rem; margin-bottom: 1rem; }
 
-  /* ── 인강 해빗 트래커 ── */
+  /* ── 강의 해빗 트래커 ── */
   .lecture-add-row { display: flex; gap: 0.6rem; margin-bottom: 1rem; flex-wrap: wrap; }
   .lecture-add-row .add-input { min-width: 140px; }
   .lec-count-input { width: 90px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 0.55rem 0.7rem; font-size: 0.8rem; color: var(--text); font-family: 'DM Mono', monospace; outline: none; transition: border-color 0.2s; }
@@ -261,7 +261,7 @@
     <div id="tracker-view-lecture" style="display:none;">
       <div class="section-header">
         <button class="tracker-back-btn" onclick="showTrackerMain()">← 돌아가기</button>
-        <div class="section-title">🎧 인강 진도표</div>
+        <div class="section-title">강의 진도표</div>
         <div></div>
       </div>
       <div id="lecture-progress-bars"></div>
@@ -456,21 +456,21 @@ function renderTrackerOverview() {
   const grid = document.getElementById('trackerOverviewGrid');
   if (!grid) return;
 
-  // 인강
+  // 강의
   const lecs = state.lectures || [];
   let lecTotal = 0, lecDone = 0;
   lecs.forEach(c => { lecTotal += c.total||0; lecDone += (c.done||[]).filter(Boolean).length; });
   const lecPct = lecTotal ? Math.round(lecDone/lecTotal*100) : 0;
 
+  // 순서 고정: 강의 → 개념서 → 암기장 → 선택형 → 사례형
+  const ORDER = ['concept','memo','choice','case'];
+  const names = { concept:'개념서', memo:'암기장', choice:'선택형', case:'사례형' };
+
   const cards = [
-    { key:'lecture', icon:'🎧', name:'인강', pct1: lecPct, cnt: `${lecDone}/${lecTotal} 강`, type:'lecture' },
+    { key:'lecture', name:'강의', pct1: lecPct, cnt: `${lecDone}/${lecTotal} 강`, type:'lecture' },
   ];
 
-  const labels = { concept:'📖 개념서', memo:'🧠 암기장', choice:'📝 선택형', case:'⚖️ 사례형' };
-  const icons  = { concept:'📖', memo:'🧠', choice:'📝', case:'⚖️' };
-  const names  = { concept:'개념서', memo:'암기장', choice:'선택형', case:'사례형' };
-
-  TRACKER_KEYS.forEach(type => {
+  ORDER.forEach(type => {
     const groups = state[type] || [];
     let total=0, done1=0, done2=0;
     groups.forEach(g => {
@@ -480,13 +480,12 @@ function renderTrackerOverview() {
     });
     const pct1 = total ? Math.round(done1/total*100) : 0;
     const pct2 = total ? Math.round(done2/total*100) : 0;
-    cards.push({ key:type, icon:icons[type], name:names[type], pct1, pct2, cnt1:`1회 ${done1}/${total}`, cnt2:`2회 ${done2}/${total}`, type });
+    cards.push({ key:type, name:names[type], pct1, pct2, cnt1:`1회 ${done1}/${total}`, cnt2:`2회 ${done2}/${total}`, type });
   });
 
   grid.innerHTML = cards.map(c => {
     if (c.key === 'lecture') {
       return `<div class="tracker-card" onclick="showTrackerSub('lecture')">
-        <div class="tracker-card-icon">${c.icon}</div>
         <div class="tracker-card-name">${c.name}</div>
         <div class="tracker-card-pct">${c.pct1}<span style="font-size:0.85rem">%</span></div>
         <div class="tracker-card-bar"><div class="tracker-card-fill" style="width:${c.pct1}%"></div></div>
@@ -494,7 +493,6 @@ function renderTrackerOverview() {
       </div>`;
     }
     return `<div class="tracker-card" onclick="showTrackerSub('${c.type}')">
-      <div class="tracker-card-icon">${c.icon}</div>
       <div class="tracker-card-name">${c.name}</div>
       <div class="tracker-card-pct">${c.pct1}<span style="font-size:0.85rem">%</span></div>
       <div class="tracker-card-bar" style="margin-bottom:4px;"><div class="tracker-card-fill" style="width:${c.pct1}%"></div></div>
@@ -598,7 +596,7 @@ function renderTodayTimetable() {
     }).join('');
 }
 
-// ── 인강 해빗 트래커 ──
+// ── 강의 해빗 트래커 ──
 function renderLectures() {
   const container = document.getElementById('lecture-courses');
   if (!container) return;
@@ -634,10 +632,10 @@ function renderLectures() {
         </div>
         <div class="lecture-course-right">
           <button class="lecture-del-btn" onclick="event.stopPropagation();delLectureCourse(${ci})">삭제</button>
-          <span class="lecture-course-chevron open">▼</span>
+          <span class="lecture-course-chevron">▼</span>
         </div>
       </div>
-      <div class="lecture-dots-wrap">
+      <div class="lecture-dots-wrap lecture-dots-collapsed">
         <div class="lecture-dots-grid">${dotsHtml}</div>
       </div>`;
     container.appendChild(div);
@@ -716,9 +714,9 @@ function renderSection(type) {
             </div>
           </div>
         </div>
-        <span class="subject-chevron open" style="margin-left:0.8rem;">▼</span>
+        <span class="subject-chevron" style="margin-left:0.8rem;">▼</span>
       </div>
-      <div class="items-list">
+      <div class="items-list collapsed">
         <div class="item-row" style="background:var(--bg3);padding:0.4rem 1rem;border-bottom:1px solid var(--border);">
           <span style="flex:1;font-size:0.72rem;color:var(--text3);">항목</span>
           <span style="font-size:0.68rem;color:var(--gold);width:52px;text-align:center;font-family:'DM Mono',monospace;">1회독</span>
