@@ -48,7 +48,6 @@
   .section.active { display: block; }
   .section-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 1.8rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
   .section-title { font-family: 'Noto Serif KR', serif; font-size: 1.4rem; font-weight: 600; color: var(--gold); }
-  .section-subtitle { font-size: 0.75rem; color: var(--text3); margin-top: 0.3rem; }
 
   /* Progress */
   .progress-wrap { margin-bottom: 2rem; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
@@ -196,7 +195,6 @@
 
 <nav>
   <button class="nav-btn active" onclick="showSection('checklist',this)">✅ 오늘 할 일</button>
-  <button class="nav-btn" onclick="showSection('overview',this)">📊 전체 현황</button>
   <button class="nav-btn" onclick="showSection('lecture',this)">강의</button>
     <button class="nav-btn" onclick="showSection('concept',this)">개념서</button>
   <button class="nav-btn" onclick="showSection('memo',this)">암기장</button>
@@ -212,31 +210,34 @@
     <div class="section-header">
       <div>
         <div class="section-title">✅ 오늘 할 일</div>
-        <div class="section-subtitle">오늘 완료해야 할 일들을 체크하세요</div>
       </div>
-      <div class="cl-date-badge" id="cl-date-badge"></div>
+      <div style="display:flex;align-items:center;gap:0.8rem;">
+        <div class="cl-date-badge" id="cl-date-badge"></div>
+        <button class="add-btn" id="cl-view-toggle" onclick="toggleChecklistView()" style="font-size:0.72rem;padding:0.35rem 0.8rem;">🗓️ 오늘 시간표</button>
+      </div>
     </div>
-    <div class="cl-stats">
-      <div class="cl-stat-chip" id="cl-total-chip">총 0개</div>
-      <div class="cl-stat-chip done-chip" id="cl-done-chip">완료 0개</div>
+    <!-- 체크리스트 뷰 -->
+    <div id="cl-view-checklist">
+      <div class="cl-stats">
+        <div class="cl-stat-chip" id="cl-total-chip">총 0개</div>
+        <div class="cl-stat-chip done-chip" id="cl-done-chip">완료 0개</div>
+      </div>
+      <div class="checklist-wrap" id="checklist-container"></div>
+      <div class="cl-add-row">
+        <input class="add-input" id="cl-input" placeholder="할 일 추가 (Enter로 저장)" onkeydown="if(event.key==='Enter')addCheckItem()" />
+        <button class="add-btn" onclick="addCheckItem()">+ 추가</button>
+      </div>
     </div>
-    <div class="checklist-wrap" id="checklist-container"></div>
-    <div class="cl-add-row">
-      <input class="add-input" id="cl-input" placeholder="할 일 추가 (Enter로 저장)" onkeydown="if(event.key==='Enter')addCheckItem()" />
-      <button class="add-btn" onclick="addCheckItem()">+ 추가</button>
+    <!-- 시간표 뷰 -->
+    <div id="cl-view-timetable" style="display:none;">
+      <div id="cl-timetable-content"></div>
     </div>
-  </div>
-
-  <!-- ── 전체 현황 ── -->
-  <div class="section" id="section-overview">
-    <div class="section-header"><div><div class="section-title">전체 학습 현황</div><div class="section-subtitle">오늘의 진도를 한눈에 확인하세요</div></div></div>
-    <div class="overview-grid" id="overviewGrid"></div>
   </div>
 
   <!-- ── 인강 진도표 (해빗 트래커) ── -->
   <div class="section" id="section-lecture">
-    <div class="section-header"><div><div class="section-title">🎧 인강 진도표</div><div class="section-subtitle">강의별 회차를 클릭해서 완료 체크하세요</div></div></div>
-    <div class="progress-wrap"><div class="progress-label"><span>전체 진도</span><span class="progress-pct" id="lecture-pct">0%</span></div><div class="progress-bar"><div class="progress-fill" id="lecture-bar" style="width:0%"></div></div></div>
+    <div class="section-header"><div><div class="section-title">🎧 인강 진도표</div></div></div>
+    <div id="lecture-progress-bars"></div>
     <div class="lecture-add-row">
       <input class="add-input" id="lecture-name-input" placeholder="강의 이름 (예: 민법 기본강의)" style="flex:2;" />
       <input class="lec-count-input" id="lecture-count-input" type="number" min="1" max="300" placeholder="강의 수" />
@@ -247,39 +248,39 @@
 
   <!-- ── 선택형 진도표 ── -->
   <div class="section" id="section-choice">
-    <div class="section-header"><div><div class="section-title">📝 선택형 진도표</div><div class="section-subtitle">선택형 문제풀이 진도를 체크하세요</div></div></div>
-    <div class="progress-wrap"><div class="progress-label"><span>전체 진도</span><span class="progress-pct" id="choice-pct">0%</span></div><div class="progress-bar"><div class="progress-fill" id="choice-bar" style="width:0%"></div></div></div>
+    <div class="section-header"><div><div class="section-title">📝 선택형 진도표</div></div></div>
+    <div id="choice-progress-bars"></div>
     <div class="add-subject-row"><input class="add-input" id="choice-subj-input" placeholder="과목명 (예: 헌법)" /><button class="add-btn" onclick="addSubject('choice')">+ 과목 추가</button></div>
     <div id="choice-groups"></div>
   </div>
 
   <!-- ── 사례형 진도표 ── -->
   <div class="section" id="section-case">
-    <div class="section-header"><div><div class="section-title">⚖️ 사례형 진도표</div><div class="section-subtitle">사례형 문제풀이 진도를 체크하세요</div></div></div>
-    <div class="progress-wrap"><div class="progress-label"><span>전체 진도</span><span class="progress-pct" id="case-pct">0%</span></div><div class="progress-bar"><div class="progress-fill" id="case-bar" style="width:0%"></div></div></div>
+    <div class="section-header"><div><div class="section-title">⚖️ 사례형 진도표</div></div></div>
+    <div id="case-progress-bars"></div>
     <div class="add-subject-row"><input class="add-input" id="case-subj-input" placeholder="과목명 (예: 형법)" /><button class="add-btn" onclick="addSubject('case')">+ 과목 추가</button></div>
     <div id="case-groups"></div>
   </div>
 
   <!-- ── 개념서 정독 ── -->
   <div class="section" id="section-concept">
-    <div class="section-header"><div><div class="section-title">📖 개념서 정독 진도표</div><div class="section-subtitle">챕터별 정독 현황을 체크하세요</div></div></div>
-    <div class="progress-wrap"><div class="progress-label"><span>전체 진도</span><span class="progress-pct" id="concept-pct">0%</span></div><div class="progress-bar"><div class="progress-fill" id="concept-bar" style="width:0%"></div></div></div>
+    <div class="section-header"><div><div class="section-title">📖 개념서 정독 진도표</div></div></div>
+    <div id="concept-progress-bars"></div>
     <div class="add-subject-row"><input class="add-input" id="concept-subj-input" placeholder="과목명 (예: 민소법)" /><button class="add-btn" onclick="addSubject('concept')">+ 과목 추가</button></div>
     <div id="concept-groups"></div>
   </div>
 
   <!-- ── 암기장 정독 ── -->
   <div class="section" id="section-memo">
-    <div class="section-header"><div><div class="section-title">🧠 암기장 정독 진도표</div><div class="section-subtitle">암기장 회독 현황을 체크하세요</div></div></div>
-    <div class="progress-wrap"><div class="progress-label"><span>전체 진도</span><span class="progress-pct" id="memo-pct">0%</span></div><div class="progress-bar"><div class="progress-fill" id="memo-bar" style="width:0%"></div></div></div>
+    <div class="section-header"><div><div class="section-title">🧠 암기장 정독 진도표</div></div></div>
+    <div id="memo-progress-bars"></div>
     <div class="add-subject-row"><input class="add-input" id="memo-subj-input" placeholder="과목명 (예: 형소법)" /><button class="add-btn" onclick="addSubject('memo')">+ 과목 추가</button></div>
     <div id="memo-groups"></div>
   </div>
 
   <!-- ── 요일별 시간표 ── -->
   <div class="section" id="section-daily">
-    <div class="section-header"><div><div class="section-title">🗓️ 요일별 고정 시간표</div><div class="section-subtitle">요일별 고정 일정을 설정하세요 (24시간)</div></div></div>
+    <div class="section-header"><div><div class="section-title">🗓️ 요일별 고정 시간표</div></div></div>
     <div class="week-tabs" id="weekTabs">
       <button class="week-tab" onclick="selectWeekDay(0,this)">월</button>
       <button class="week-tab" onclick="selectWeekDay(1,this)">화</button>
@@ -350,7 +351,6 @@ onSnapshot(docRef, (snap) => {
     renderLectures();
     TRACKER_KEYS.forEach(renderSection);
     renderWeekDay(currentWeekDay);
-    renderOverview();
   }
   if (firstLoad) {
     firstLoad = false;
@@ -389,7 +389,6 @@ window.showSection = (id, btn) => {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('section-' + id).classList.add('active');
   btn.classList.add('active');
-  if (id === 'overview') renderOverview();
 };
 
 // ── 체크리스트 ──
@@ -435,18 +434,85 @@ window.delCheckItem = (i) => {
   renderChecklist(); scheduleSave();
 };
 
+// ── 오늘 할 일 ↔ 시간표 전환 ──
+let clViewMode = 'checklist'; // 'checklist' | 'timetable'
+
+window.toggleChecklistView = () => {
+  const checklistEl = document.getElementById('cl-view-checklist');
+  const timetableEl = document.getElementById('cl-view-timetable');
+  const btn = document.getElementById('cl-view-toggle');
+  if (clViewMode === 'checklist') {
+    clViewMode = 'timetable';
+    checklistEl.style.display = 'none';
+    timetableEl.style.display = 'block';
+    btn.textContent = '✅ 할 일 목록';
+    renderTodayTimetable();
+  } else {
+    clViewMode = 'checklist';
+    timetableEl.style.display = 'none';
+    checklistEl.style.display = 'block';
+    btn.textContent = '🗓️ 오늘 시간표';
+  }
+};
+
+function renderTodayTimetable() {
+  const now = new Date();
+  const jsDay = now.getDay(); // 0=일,1=월,...,6=토
+  const todayIdx = jsDay === 0 ? 6 : jsDay - 1; // 0=월,...,6=일
+  const blocks = state.weekly[todayIdx] || [];
+  const container = document.getElementById('cl-timetable-content');
+  if (!container) return;
+
+  const currentTime = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const dayNames = ['월','화','수','목','금','토','일'];
+
+  if (blocks.length === 0) {
+    container.innerHTML = `<div class="timetable-empty">${dayNames[todayIdx]}요일 시간표가 없어요. 시간표 탭에서 추가해 보세요 📋</div>`;
+    return;
+  }
+
+  container.innerHTML = `<div style="font-size:0.75rem;color:var(--text2);margin-bottom:0.8rem;font-family:'DM Mono',monospace;">${dayNames[todayIdx]}요일 시간표 · 현재 ${currentTime}</div>` +
+    blocks.map(block => {
+      const isCurrent = block.start <= currentTime && currentTime < block.end;
+      return `<div class="time-block" style="${isCurrent ? 'border-color:var(--gold);box-shadow:0 0 0 2px rgba(139,105,20,0.15);' : ''}">
+        <div class="time-block-header" style="${isCurrent ? 'background:var(--gold-dim);' : ''}">
+          <span class="time-label">${block.start} ~ ${block.end}</span>
+          ${isCurrent ? '<span style="font-size:0.68rem;color:var(--gold);font-family:\'DM Mono\',monospace;font-weight:600;">▶ 지금</span>' : ''}
+          <span style="flex:1;font-size:0.82rem;color:var(--text);padding:0 0.4rem;">${block.subject || ''}</span>
+        </div>
+        ${block.note ? `<div class="time-block-body"><div class="time-note">${block.note}</div></div>` : ''}
+      </div>`;
+    }).join('');
+}
+
 // ── 인강 해빗 트래커 ──
 function renderLectures() {
   const container = document.getElementById('lecture-courses');
+  const barsContainer = document.getElementById('lecture-progress-bars');
   if (!container) return;
   const courses = state.lectures || [];
   container.innerHTML = '';
 
-  let totalAll = 0, doneAll = 0;
+  // 과목별 진도바 렌더링
+  if (barsContainer) {
+    if (courses.length === 0) {
+      barsContainer.innerHTML = '';
+    } else {
+      barsContainer.innerHTML = courses.map(course => {
+        const total = course.total || 0;
+        const doneCnt = (course.done || []).filter(Boolean).length;
+        const pct = total ? Math.round(doneCnt/total*100) : 0;
+        return `<div class="progress-wrap" style="margin-bottom:0.6rem;">
+          <div class="progress-label"><span>${course.name}</span><span class="progress-pct">${pct}%</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+          <div style="font-size:0.65rem;color:var(--text3);margin-top:0.3rem;font-family:'DM Mono',monospace;">${doneCnt}/${total} 강</div>
+        </div>`;
+      }).join('');
+    }
+  }
   courses.forEach((course, ci) => {
     const total = course.total || 0;
     const doneCnt = (course.done || []).filter(Boolean).length;
-    totalAll += total; doneAll += doneCnt;
 
     const div = document.createElement('div');
     div.className = 'lecture-course';
@@ -472,12 +538,6 @@ function renderLectures() {
       </div>`;
     container.appendChild(div);
   });
-
-  const pct = totalAll ? Math.round(doneAll/totalAll*100) : 0;
-  const pEl = document.getElementById('lecture-pct');
-  const bEl = document.getElementById('lecture-bar');
-  if (pEl) pEl.textContent = pct + '%';
-  if (bEl) bEl.style.width = pct + '%';
 }
 
 window.addLectureCourse = () => {
@@ -495,7 +555,7 @@ window.addLectureCourse = () => {
 window.toggleLectureDot = (ci, k) => {
   if (!state.lectures[ci].done) state.lectures[ci].done = [];
   state.lectures[ci].done[k] = !state.lectures[ci].done[k];
-  renderLectures(); renderOverview(); scheduleSave();
+  renderLectures(); scheduleSave();
   showToast(state.lectures[ci].done[k] ? `${k+1}강 완료!` : `${k+1}강 취소`);
 };
 
@@ -509,36 +569,67 @@ window.toggleLectureCourse = (header) => {
 
 window.delLectureCourse = (ci) => {
   state.lectures.splice(ci, 1);
-  renderLectures(); renderOverview(); scheduleSave();
+  renderLectures(); scheduleSave();
   showToast('강의가 삭제됐어요');
 };
 
-// ── 일반 진도표 ──
+// ── 일반 진도표 (1회독/2회독 지원) ──
 function renderSection(type) {
   const groups = state[type] || [];
   const container = document.getElementById(type + '-groups');
+  const barsContainer = document.getElementById(type + '-progress-bars');
   if (!container) return;
   container.innerHTML = '';
-  let total = 0, done = 0;
+
+  // 과목별 진도바 렌더링
+  if (barsContainer) {
+    if (groups.length === 0) {
+      barsContainer.innerHTML = '';
+    } else {
+      barsContainer.innerHTML = groups.map(group => {
+        const total = group.items.length;
+        const done1 = group.items.filter(i => i.done).length;
+        const done2 = group.items.filter(i => i.done2).length;
+        const pct1 = total ? Math.round(done1/total*100) : 0;
+        const pct2 = total ? Math.round(done2/total*100) : 0;
+        return `<div class="progress-wrap" style="margin-bottom:0.6rem;">
+          <div class="progress-label"><span>${group.name}</span><span style="display:flex;gap:0.8rem;font-family:'DM Mono',monospace;font-size:0.72rem;"><span style="color:var(--gold)">1회독 ${pct1}%</span><span style="color:var(--text3)">2회독 ${pct2}%</span></span></div>
+          <div class="progress-bar" style="height:5px;margin-bottom:3px;"><div class="progress-fill" style="width:${pct1}%"></div></div>
+          <div class="progress-bar" style="height:3px;background:var(--border);border-radius:100px;overflow:hidden;"><div style="height:100%;width:${pct2}%;background:linear-gradient(90deg,var(--text2),var(--text3));border-radius:100px;transition:width 0.5s;"></div></div>
+        </div>`;
+      }).join('');
+    }
+  }
 
   groups.forEach((group, gi) => {
-    const d = group.items.filter(i => i.done).length;
-    total += group.items.length; done += d;
+    const done1 = group.items.filter(i => i.done).length;
+    const done2 = group.items.filter(i => i.done2).length;
+    const total = group.items.length;
     const div = document.createElement('div');
     div.className = 'subject-group';
     div.innerHTML = `
       <div class="subject-title-row" onclick="toggleGroup(this)">
-        <div class="subject-name">${group.name}<span class="subject-badge">${d}/${group.items.length}</span></div>
+        <div class="subject-name">${group.name}<span class="subject-badge">1회 ${done1}/${total} · 2회 ${done2}/${total}</span></div>
         <span class="subject-chevron open">▼</span>
       </div>
       <div class="items-list">
-        ${group.items.map((item, ii) => `
-          <div class="item-row ${item.done?'done':''}">
-            <div class="check-box ${item.done?'checked':''}" onclick="toggleItem('${type}',${gi},${ii})">${item.done?'✓':''}</div>
-            <span class="item-label" onclick="toggleItem('${type}',${gi},${ii})">${item.label}</span>
-            <span class="item-num">${ii+1}</span>
+        <div class="item-row" style="background:var(--bg3);padding:0.4rem 1rem;border-bottom:1px solid var(--border);">
+          <span style="flex:1;font-size:0.72rem;color:var(--text3);">항목</span>
+          <span style="font-size:0.68rem;color:var(--gold);width:52px;text-align:center;font-family:'DM Mono',monospace;">1회독</span>
+          <span style="font-size:0.68rem;color:var(--text2);width:52px;text-align:center;font-family:'DM Mono',monospace;">2회독</span>
+          <span style="width:24px;"></span>
+        </div>
+        ${group.items.map((item, ii) => {
+          const rowDone = item.done && item.done2;
+          return `<div class="item-row ${rowDone?'done':''}">
+            <span class="item-label" style="${rowDone?'color:var(--text3);text-decoration:line-through;':''}">${item.label}</span>
+            <div style="display:flex;gap:6px;align-items:center;margin-left:auto;">
+              <div class="check-box ${item.done?'checked':''}" style="width:22px;height:22px;" onclick="toggleItem('${type}',${gi},${ii},1)" title="1회독">${item.done?'✓':''}</div>
+              <div class="check-box ${item.done2?'checked':''}" style="width:22px;height:22px;background:${item.done2?'var(--text2)':'var(--bg)'};border-color:${item.done2?'var(--text2)':'var(--border)'};" onclick="toggleItem('${type}',${gi},${ii},2)" title="2회독">${item.done2?'✓':''}</div>
+            </div>
             <button class="del-btn" onclick="delItem('${type}',${gi},${ii})">✕</button>
-          </div>`).join('')}
+          </div>`;
+        }).join('')}
         <div class="item-row" style="background:transparent;border:none;">
           <div class="add-row" style="width:100%;">
             <input class="add-input" id="item-input-${type}-${gi}" placeholder="항목 추가 (Enter)" onkeydown="if(event.key==='Enter')addItem('${type}',${gi})" />
@@ -548,12 +639,6 @@ function renderSection(type) {
       </div>`;
     container.appendChild(div);
   });
-
-  const pct = total ? Math.round(done/total*100) : 0;
-  const pEl = document.getElementById(type+'-pct');
-  const bEl = document.getElementById(type+'-bar');
-  if (pEl) pEl.textContent = pct+'%';
-  if (bEl) bEl.style.width = pct+'%';
 }
 
 window.toggleGroup = (header) => {
@@ -564,23 +649,29 @@ window.toggleGroup = (header) => {
   list.classList.toggle('collapsed', open);
 };
 
-window.toggleItem = (type, gi, ii) => {
-  state[type][gi].items[ii].done = !state[type][gi].items[ii].done;
-  renderSection(type); renderOverview(); scheduleSave();
-  showToast(state[type][gi].items[ii].done ? '✓ 완료 체크!' : '체크 해제');
+window.toggleItem = (type, gi, ii, round) => {
+  const item = state[type][gi].items[ii];
+  if (round === 2) {
+    item.done2 = !item.done2;
+    showToast(item.done2 ? '2회독 완료!' : '2회독 체크 해제');
+  } else {
+    item.done = !item.done;
+    showToast(item.done ? '✓ 1회독 완료!' : '1회독 체크 해제');
+  }
+  renderSection(type); scheduleSave();
 };
 
 window.delItem = (type, gi, ii) => {
   state[type][gi].items.splice(ii,1);
-  renderSection(type); renderOverview(); scheduleSave();
+  renderSection(type); scheduleSave();
 };
 
 window.addItem = (type, gi) => {
   const inp = document.getElementById(`item-input-${type}-${gi}`);
   const label = inp.value.trim();
   if (!label) return;
-  state[type][gi].items.push({label, done:false});
-  renderSection(type); renderOverview(); scheduleSave();
+  state[type][gi].items.push({label, done:false, done2:false});
+  renderSection(type); scheduleSave();
   showToast('항목이 추가됐어요');
 };
 
@@ -663,52 +754,6 @@ window.delWeekBlock = (dayIdx, bi) => {
   renderWeekDay(dayIdx); scheduleSave();
   showToast('시간 블록이 삭제됐어요');
 };
-
-// ── 전체 현황 ──
-function renderOverview() {
-  const grid = document.getElementById('overviewGrid');
-  if (!grid) return;
-
-  // 인강
-  const lecs = state.lectures || [];
-  let lecTotal = 0, lecDone = 0;
-  lecs.forEach(c => { lecTotal += c.total||0; lecDone += (c.done||[]).filter(Boolean).length; });
-  const lecPct = lecTotal ? Math.round(lecDone/lecTotal*100) : 0;
-
-  const labels = {choice:'선택형', case:'사례형', concept:'개념서', memo:'암기장'};
-  let html = `<div class="ov-card">
-    <div class="ov-pct">${lecPct}<span style="font-size:0.9rem">%</span></div>
-    <div class="ov-label">인강 진도</div>
-    <div class="ov-bar"><div class="ov-fill" style="width:${lecPct}%"></div></div>
-    <div style="font-size:0.65rem;color:var(--text3);margin-top:0.4rem;font-family:'DM Mono',monospace;">${lecDone}/${lecTotal}</div>
-  </div>`;
-
-  TRACKER_KEYS.forEach(type => {
-    const groups = state[type]||[];
-    let total=0, done=0;
-    groups.forEach(g=>{total+=g.items.length; done+=g.items.filter(i=>i.done).length;});
-    const pct = total ? Math.round(done/total*100) : 0;
-    html += `<div class="ov-card">
-      <div class="ov-pct">${pct}<span style="font-size:0.9rem">%</span></div>
-      <div class="ov-label">${labels[type]}</div>
-      <div class="ov-bar"><div class="ov-fill" style="width:${pct}%"></div></div>
-      <div style="font-size:0.65rem;color:var(--text3);margin-top:0.4rem;font-family:'DM Mono',monospace;">${done}/${total}</div>
-    </div>`;
-  });
-
-  // 오늘 할 일
-  const cl = state.checklist||[];
-  const clDone = cl.filter(i=>i.done).length;
-  const clPct = cl.length ? Math.round(clDone/cl.length*100) : 0;
-  html += `<div class="ov-card">
-    <div class="ov-pct">${clPct}<span style="font-size:0.9rem">%</span></div>
-    <div class="ov-label">오늘 할 일</div>
-    <div class="ov-bar"><div class="ov-fill" style="width:${clPct}%"></div></div>
-    <div style="font-size:0.65rem;color:var(--text3);margin-top:0.4rem;font-family:'DM Mono',monospace;">${clDone}/${cl.length}</div>
-  </div>`;
-
-  grid.innerHTML = html;
-}
 
 // ── TOAST ──
 let toastTimer;
