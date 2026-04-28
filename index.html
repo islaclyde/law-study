@@ -7,11 +7,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0f0e0c; --bg2: #181714; --bg3: #211f1b; --card: #1c1a17;
-    --border: #2e2b25; --gold: #c9a84c; --gold2: #e8c97a;
-    --gold-dim: rgba(201,168,76,0.12); --gold-dim2: rgba(201,168,76,0.06);
-    --text: #e8e2d6; --text2: #9e9789; --text3: #5c5850;
-    --red: #c0392b; --green2: #4caf50;
+    --bg: #faf8f4; --bg2: #ffffff; --bg3: #f3f0ea; --card: #ffffff;
+    --border: #e0dbd0; --gold: #8b6914; --gold2: #a07c1e;
+    --gold-dim: rgba(139,105,20,0.08); --gold-dim2: rgba(139,105,20,0.04);
+    --text: #2a2520; --text2: #6b6358; --text3: #a09890;
+    --red: #c0392b; --green2: #2e7d32; --green-dim: rgba(46,125,50,0.08);
+    --accent: #8b6914;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; min-height: 100vh; overflow-x: hidden; }
@@ -24,7 +25,7 @@
   .loading-text { font-size: 0.8rem; color: var(--text3); font-family: 'DM Mono', monospace; }
 
   /* Header */
-  header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100; }
+  header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
   .logo { font-family: 'Noto Serif KR', serif; font-size: 1.15rem; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 0.6rem; }
   .logo-icon { width: 28px; height: 28px; border: 1.5px solid var(--gold); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
   .header-right { display: flex; align-items: center; gap: 1rem; }
@@ -50,7 +51,7 @@
   .section-subtitle { font-size: 0.75rem; color: var(--text3); margin-top: 0.3rem; }
 
   /* Progress */
-  .progress-wrap { margin-bottom: 2rem; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem 1.5rem; }
+  .progress-wrap { margin-bottom: 2rem; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
   .progress-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text2); margin-bottom: 0.6rem; font-family: 'DM Mono', monospace; }
   .progress-pct { color: var(--gold); font-weight: 500; font-size: 0.9rem; }
   .progress-bar { height: 6px; background: var(--border); border-radius: 100px; overflow: hidden; }
@@ -60,18 +61,18 @@
   .subject-group { margin-bottom: 1.5rem; }
   .subject-title-row { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 1rem; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px 6px 0 0; cursor: pointer; user-select: none; }
   .subject-name { font-size: 0.85rem; font-weight: 500; color: var(--gold2); display: flex; align-items: center; gap: 0.6rem; }
-  .subject-badge { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--text3); background: var(--bg); padding: 0.15rem 0.5rem; border-radius: 100px; border: 1px solid var(--border); }
+  .subject-badge { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--text3); background: var(--bg2); padding: 0.15rem 0.5rem; border-radius: 100px; border: 1px solid var(--border); }
   .subject-chevron { font-size: 0.7rem; color: var(--text3); transition: transform 0.2s; }
   .subject-chevron.open { transform: rotate(180deg); }
-  .items-list { border: 1px solid var(--border); border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; }
+  .items-list { border: 1px solid var(--border); border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; background: var(--card); }
   .items-list.collapsed { display: none; }
 
-  /* Item row */
+  /* Item row (non-lecture) */
   .item-row { display: flex; align-items: center; gap: 0.8rem; padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); transition: background 0.15s; }
   .item-row:last-child { border-bottom: none; }
   .item-row:hover { background: var(--gold-dim2); }
-  .item-row.done { background: rgba(46,125,50,0.05); }
-  .item-row.done .item-label { color: var(--text3); text-decoration: line-through; text-decoration-color: var(--text3); }
+  .item-row.done { background: var(--green-dim); }
+  .item-row.done .item-label { color: var(--text3); text-decoration: line-through; }
   .check-box { width: 18px; height: 18px; border: 1.5px solid var(--border); border-radius: 4px; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; transition: all 0.2s; background: var(--bg); }
   .check-box.checked { background: var(--green2); border-color: var(--green2); color: #fff; }
   .item-label { font-size: 0.82rem; color: var(--text); flex: 1; line-height: 1.4; cursor: pointer; }
@@ -82,39 +83,89 @@
 
   /* Inputs */
   .add-row { display: flex; gap: 0.6rem; }
-  .add-input { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 0.55rem 0.9rem; font-size: 0.8rem; color: var(--text); font-family: 'Noto Sans KR', sans-serif; outline: none; transition: border-color 0.2s; }
+  .add-input { flex: 1; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 0.55rem 0.9rem; font-size: 0.8rem; color: var(--text); font-family: 'Noto Sans KR', sans-serif; outline: none; transition: border-color 0.2s; }
   .add-input::placeholder { color: var(--text3); }
   .add-input:focus { border-color: var(--gold); }
   .add-btn { background: var(--gold-dim); border: 1px solid var(--gold); color: var(--gold); border-radius: 6px; padding: 0.55rem 1rem; font-size: 0.78rem; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; font-weight: 500; transition: all 0.2s; white-space: nowrap; }
-  .add-btn:hover { background: var(--gold); color: var(--bg); }
+  .add-btn:hover { background: var(--gold); color: #fff; }
   .add-subject-row { display: flex; gap: 0.6rem; margin-bottom: 1rem; }
 
-  /* Daily */
-  .time-block { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 1rem; }
-  .time-block-header { display: flex; align-items: center; gap: 1rem; padding: 0.8rem 1.2rem; background: var(--bg3); border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 0.6rem; }
-  .time-label { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--gold); min-width: 90px; }
+  /* ── 인강 해빗 트래커 ── */
+  .lecture-add-row { display: flex; gap: 0.6rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .lecture-add-row .add-input { min-width: 140px; }
+  .lec-count-input { width: 90px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 0.55rem 0.7rem; font-size: 0.8rem; color: var(--text); font-family: 'DM Mono', monospace; outline: none; transition: border-color 0.2s; }
+  .lec-count-input:focus { border-color: var(--gold); }
+
+  .lecture-course { background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 1.2rem; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+  .lecture-course-header { display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1.1rem; background: var(--bg3); border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; }
+  .lecture-course-name { font-size: 0.88rem; font-weight: 600; color: var(--gold); display: flex; align-items: center; gap: 0.6rem; }
+  .lecture-course-badge { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--text3); background: var(--bg2); padding: 0.15rem 0.55rem; border-radius: 100px; border: 1px solid var(--border); }
+  .lecture-course-right { display: flex; align-items: center; gap: 0.6rem; }
+  .lecture-course-chevron { font-size: 0.7rem; color: var(--text3); transition: transform 0.2s; }
+  .lecture-course-chevron.open { transform: rotate(180deg); }
+  .lecture-del-btn { background: none; border: none; color: var(--text3); font-size: 0.72rem; padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
+  .lecture-del-btn:hover { color: var(--red); background: rgba(192,57,43,0.1); }
+
+  .lecture-dots-wrap { padding: 1rem 1.1rem 1.1rem; }
+  .lecture-dots-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+  .lecture-dot { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--border); background: var(--bg3); display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 0.62rem; font-weight: 500; color: var(--text3); cursor: pointer; transition: all 0.18s; user-select: none; flex-shrink: 0; }
+  .lecture-dot:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
+  .lecture-dot.done { background: var(--gold); border-color: var(--gold); color: #fff; box-shadow: 0 1px 6px rgba(139,105,20,0.3); }
+  .lecture-dots-collapsed { display: none; }
+
+  /* ── 요일별 시간표 ── */
+  .week-tabs { display: flex; gap: 0.4rem; margin-bottom: 1.2rem; flex-wrap: wrap; }
+  .week-tab { padding: 0.45rem 0.9rem; font-size: 0.78rem; font-family: 'Noto Sans KR', sans-serif; font-weight: 500; border-radius: 20px; border: 1.5px solid var(--border); background: var(--bg3); color: var(--text2); cursor: pointer; transition: all 0.2s; }
+  .week-tab:hover { border-color: var(--gold); color: var(--gold); }
+  .week-tab.active { background: var(--gold); border-color: var(--gold); color: #fff; }
+  .week-tab.today { border-color: var(--gold2); }
+
+  .time-block { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 0.85rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .time-block-header { display: flex; align-items: center; padding: 0.7rem 1.1rem; background: var(--bg3); border-bottom: 1px solid var(--border); gap: 0.8rem; flex-wrap: wrap; }
+  .time-label { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--gold); min-width: 110px; font-weight: 500; }
   .time-subject-input { flex: 1; min-width: 120px; background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--text); font-size: 0.82rem; font-family: 'Noto Sans KR', sans-serif; padding: 0.2rem 0; outline: none; transition: border-color 0.2s; }
   .time-subject-input::placeholder { color: var(--text3); }
   .time-subject-input:focus { border-bottom-color: var(--gold); }
-  .time-block-body { padding: 0.8rem 1.2rem; }
-  .time-note { width: 100%; background: transparent; border: none; color: var(--text2); font-size: 0.78rem; font-family: 'Noto Sans KR', sans-serif; resize: none; outline: none; line-height: 1.6; min-height: 40px; }
+  .time-block-body { padding: 0.75rem 1.1rem; }
+  .time-note { width: 100%; background: transparent; border: none; color: var(--text2); font-size: 0.78rem; font-family: 'Noto Sans KR', sans-serif; resize: none; outline: none; line-height: 1.6; min-height: 36px; }
   .time-note::placeholder { color: var(--text3); }
-  .time-done-btn { background: none; border: 1px solid var(--border); color: var(--text3); border-radius: 100px; padding: 0.3rem 0.8rem; font-size: 0.7rem; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all 0.2s; white-space: nowrap; }
-  .time-done-btn.done { border-color: var(--green2); color: var(--green2); background: rgba(76,175,80,0.08); }
-  .add-time-row { display: flex; gap: 0.6rem; margin-bottom: 1rem; align-items: center; flex-wrap: wrap; }
-  .time-input { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem 0.7rem; font-size: 0.78rem; color: var(--text); font-family: 'DM Mono', monospace; outline: none; width: 110px; transition: border-color 0.2s; }
+  .time-done-btn { background: none; border: 1px solid var(--border); color: var(--text3); border-radius: 100px; padding: 0.28rem 0.75rem; font-size: 0.7rem; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all 0.2s; white-space: nowrap; }
+  .time-done-btn.done { border-color: var(--green2); color: var(--green2); background: var(--green-dim); }
+  .add-time-row { display: flex; gap: 0.6rem; margin-bottom: 1rem; align-items: center; flex-wrap: wrap; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 0.8rem 1rem; }
+  .add-time-row span { color: var(--text3); font-size: 0.8rem; }
+  .time-input { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem 0.7rem; font-size: 0.78rem; color: var(--text); font-family: 'DM Mono', monospace; outline: none; width: 110px; transition: border-color 0.2s; }
   .time-input:focus { border-color: var(--gold); }
+  .timetable-empty { text-align: center; padding: 2.5rem 1rem; color: var(--text3); font-size: 0.82rem; background: var(--card); border: 1px dashed var(--border); border-radius: 8px; }
+
+  /* ── 오늘 할 일 체크리스트 ── */
+  .checklist-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.05); margin-bottom: 1.5rem; }
+  .checklist-item { display: flex; align-items: center; gap: 0.9rem; padding: 0.85rem 1.2rem; border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  .checklist-item:last-child { border-bottom: none; }
+  .checklist-item:hover { background: var(--gold-dim2); }
+  .checklist-item.checked-item { background: var(--green-dim); }
+  .cl-checkbox { width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 50%; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; transition: all 0.2s; background: var(--bg3); }
+  .cl-checkbox.checked { background: var(--green2); border-color: var(--green2); color: #fff; }
+  .cl-text { flex: 1; font-size: 0.85rem; color: var(--text); cursor: pointer; line-height: 1.4; }
+  .checklist-item.checked-item .cl-text { color: var(--text3); text-decoration: line-through; }
+  .cl-del { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 0.72rem; padding: 0.2rem 0.4rem; border-radius: 4px; opacity: 0; transition: all 0.2s; }
+  .checklist-item:hover .cl-del { opacity: 1; }
+  .cl-del:hover { color: var(--red); background: rgba(192,57,43,0.1); }
+  .cl-add-row { display: flex; gap: 0.6rem; margin-top: 0.8rem; }
+  .cl-stats { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+  .cl-stat-chip { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text2); background: var(--bg3); border: 1px solid var(--border); border-radius: 100px; padding: 0.25rem 0.75rem; }
+  .cl-stat-chip.done-chip { color: var(--green2); border-color: var(--green2); background: var(--green-dim); }
+  .cl-date-badge { font-size: 0.75rem; color: var(--text3); font-family: 'DM Mono', monospace; }
 
   /* Overview */
   .overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-  .ov-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem 1rem; text-align: center; }
+  .ov-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem 1rem; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
   .ov-pct { font-family: 'DM Mono', monospace; font-size: 1.6rem; font-weight: 500; color: var(--gold); line-height: 1; margin-bottom: 0.4rem; }
   .ov-label { font-size: 0.7rem; color: var(--text3); }
   .ov-bar { margin-top: 0.6rem; height: 3px; background: var(--border); border-radius: 100px; overflow: hidden; }
   .ov-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold2)); border-radius: 100px; transition: width 0.6s; }
 
   /* Toast */
-  .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--bg3); border: 1px solid var(--gold); color: var(--gold2); padding: 0.7rem 1.2rem; border-radius: 6px; font-size: 0.78rem; font-family: 'Noto Sans KR', sans-serif; opacity: 0; transform: translateY(10px); transition: all 0.3s; z-index: 1000; pointer-events: none; }
+  .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--bg2); border: 1px solid var(--gold); color: var(--gold); padding: 0.7rem 1.2rem; border-radius: 6px; font-size: 0.78rem; font-family: 'Noto Sans KR', sans-serif; opacity: 0; transform: translateY(10px); transition: all 0.3s; z-index: 1000; pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
   .toast.show { opacity: 1; transform: translateY(0); }
 
   ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: var(--bg); } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 100px; }
@@ -124,6 +175,7 @@
     main { padding: 1.2rem 1rem 4rem; }
     .section-title { font-size: 1.15rem; }
     .overview-grid { grid-template-columns: repeat(3, 1fr); }
+    .lecture-dot { width: 32px; height: 32px; font-size: 0.58rem; }
   }
 </style>
 </head>
@@ -143,28 +195,57 @@
 </header>
 
 <nav>
-  <button class="nav-btn active" onclick="showSection('overview',this)">📊 전체 현황</button>
+  <button class="nav-btn active" onclick="showSection('checklist',this)">✅ 오늘 할 일</button>
+  <button class="nav-btn" onclick="showSection('overview',this)">📊 전체 현황</button>
   <button class="nav-btn" onclick="showSection('lecture',this)">🎧 인강 진도표</button>
   <button class="nav-btn" onclick="showSection('choice',this)">📝 선택형 진도표</button>
   <button class="nav-btn" onclick="showSection('case',this)">⚖️ 사례형 진도표</button>
   <button class="nav-btn" onclick="showSection('concept',this)">📖 개념서 정독</button>
   <button class="nav-btn" onclick="showSection('memo',this)">🧠 암기장 정독</button>
-  <button class="nav-btn" onclick="showSection('daily',this)">🗓️ 일간 시간표</button>
+  <button class="nav-btn" onclick="showSection('daily',this)">🗓️ 요일별 시간표</button>
 </nav>
 
 <main>
-  <div class="section active" id="section-overview">
+
+  <!-- ── 오늘 할 일 체크리스트 ── -->
+  <div class="section active" id="section-checklist">
+    <div class="section-header">
+      <div>
+        <div class="section-title">✅ 오늘 할 일</div>
+        <div class="section-subtitle">오늘 완료해야 할 일들을 체크하세요</div>
+      </div>
+      <div class="cl-date-badge" id="cl-date-badge"></div>
+    </div>
+    <div class="cl-stats">
+      <div class="cl-stat-chip" id="cl-total-chip">총 0개</div>
+      <div class="cl-stat-chip done-chip" id="cl-done-chip">완료 0개</div>
+    </div>
+    <div class="checklist-wrap" id="checklist-container"></div>
+    <div class="cl-add-row">
+      <input class="add-input" id="cl-input" placeholder="할 일 추가 (Enter로 저장)" onkeydown="if(event.key==='Enter')addCheckItem()" />
+      <button class="add-btn" onclick="addCheckItem()">+ 추가</button>
+    </div>
+  </div>
+
+  <!-- ── 전체 현황 ── -->
+  <div class="section" id="section-overview">
     <div class="section-header"><div><div class="section-title">전체 학습 현황</div><div class="section-subtitle">오늘의 진도를 한눈에 확인하세요</div></div></div>
     <div class="overview-grid" id="overviewGrid"></div>
   </div>
 
+  <!-- ── 인강 진도표 (해빗 트래커) ── -->
   <div class="section" id="section-lecture">
-    <div class="section-header"><div><div class="section-title">🎧 인강 진도표</div><div class="section-subtitle">들은 강의를 체크하세요</div></div></div>
+    <div class="section-header"><div><div class="section-title">🎧 인강 진도표</div><div class="section-subtitle">강의별 회차를 클릭해서 완료 체크하세요</div></div></div>
     <div class="progress-wrap"><div class="progress-label"><span>전체 진도</span><span class="progress-pct" id="lecture-pct">0%</span></div><div class="progress-bar"><div class="progress-fill" id="lecture-bar" style="width:0%"></div></div></div>
-    <div class="add-subject-row"><input class="add-input" id="lecture-subj-input" placeholder="과목명 (예: 민법)" /><button class="add-btn" onclick="addSubject('lecture')">+ 과목 추가</button></div>
-    <div id="lecture-groups"></div>
+    <div class="lecture-add-row">
+      <input class="add-input" id="lecture-name-input" placeholder="강의 이름 (예: 민법 기본강의)" style="flex:2;" />
+      <input class="lec-count-input" id="lecture-count-input" type="number" min="1" max="300" placeholder="강의 수" />
+      <button class="add-btn" onclick="addLectureCourse()">+ 강의 추가</button>
+    </div>
+    <div id="lecture-courses"></div>
   </div>
 
+  <!-- ── 선택형 진도표 ── -->
   <div class="section" id="section-choice">
     <div class="section-header"><div><div class="section-title">📝 선택형 진도표</div><div class="section-subtitle">선택형 문제풀이 진도를 체크하세요</div></div></div>
     <div class="progress-wrap"><div class="progress-label"><span>전체 진도</span><span class="progress-pct" id="choice-pct">0%</span></div><div class="progress-bar"><div class="progress-fill" id="choice-bar" style="width:0%"></div></div></div>
@@ -172,6 +253,7 @@
     <div id="choice-groups"></div>
   </div>
 
+  <!-- ── 사례형 진도표 ── -->
   <div class="section" id="section-case">
     <div class="section-header"><div><div class="section-title">⚖️ 사례형 진도표</div><div class="section-subtitle">사례형 문제풀이 진도를 체크하세요</div></div></div>
     <div class="progress-wrap"><div class="progress-label"><span>전체 진도</span><span class="progress-pct" id="case-pct">0%</span></div><div class="progress-bar"><div class="progress-fill" id="case-bar" style="width:0%"></div></div></div>
@@ -179,6 +261,7 @@
     <div id="case-groups"></div>
   </div>
 
+  <!-- ── 개념서 정독 ── -->
   <div class="section" id="section-concept">
     <div class="section-header"><div><div class="section-title">📖 개념서 정독 진도표</div><div class="section-subtitle">챕터별 정독 현황을 체크하세요</div></div></div>
     <div class="progress-wrap"><div class="progress-label"><span>전체 진도</span><span class="progress-pct" id="concept-pct">0%</span></div><div class="progress-bar"><div class="progress-fill" id="concept-bar" style="width:0%"></div></div></div>
@@ -186,6 +269,7 @@
     <div id="concept-groups"></div>
   </div>
 
+  <!-- ── 암기장 정독 ── -->
   <div class="section" id="section-memo">
     <div class="section-header"><div><div class="section-title">🧠 암기장 정독 진도표</div><div class="section-subtitle">암기장 회독 현황을 체크하세요</div></div></div>
     <div class="progress-wrap"><div class="progress-label"><span>전체 진도</span><span class="progress-pct" id="memo-pct">0%</span></div><div class="progress-bar"><div class="progress-fill" id="memo-bar" style="width:0%"></div></div></div>
@@ -193,16 +277,28 @@
     <div id="memo-groups"></div>
   </div>
 
+  <!-- ── 요일별 시간표 ── -->
   <div class="section" id="section-daily">
-    <div class="section-header"><div><div class="section-title">🗓️ 일간 시간표</div><div class="section-subtitle">오늘 공부 시간대별 내용과 완료 여부를 기록하세요</div></div></div>
+    <div class="section-header"><div><div class="section-title">🗓️ 요일별 고정 시간표</div><div class="section-subtitle">요일별 고정 일정을 설정하세요 (24시간)</div></div></div>
+    <div class="week-tabs" id="weekTabs">
+      <button class="week-tab" onclick="selectWeekDay(0,this)">월</button>
+      <button class="week-tab" onclick="selectWeekDay(1,this)">화</button>
+      <button class="week-tab" onclick="selectWeekDay(2,this)">수</button>
+      <button class="week-tab" onclick="selectWeekDay(3,this)">목</button>
+      <button class="week-tab" onclick="selectWeekDay(4,this)">금</button>
+      <button class="week-tab" onclick="selectWeekDay(5,this)">토</button>
+      <button class="week-tab" onclick="selectWeekDay(6,this)">일</button>
+    </div>
     <div class="add-time-row">
       <input class="time-input" id="time-start" type="time" value="09:00" />
-      <span style="color:var(--text3);font-size:0.8rem;">~</span>
+      <span>~</span>
       <input class="time-input" id="time-end" type="time" value="10:00" />
-      <button class="add-btn" onclick="addTimeBlock()">+ 시간 추가</button>
+      <input class="add-input" id="time-subject" placeholder="과목 / 내용" style="flex:1;min-width:120px;" />
+      <button class="add-btn" onclick="addTimeBlock()">+ 추가</button>
     </div>
     <div id="timetable-container"></div>
   </div>
+
 </main>
 
 <div class="toast" id="toast"></div>
@@ -224,25 +320,36 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const docRef = doc(db, "tracker", "my-study-data");
 
-const TRACKER_KEYS = ['lecture','choice','case','concept','memo'];
-let state = { lecture:[], choice:[], case:[], concept:[], memo:[], daily:[] };
+const TRACKER_KEYS = ['choice','case','concept','memo'];
+const DAY_NAMES = ['월','화','수','목','금','토','일'];
+let state = {
+  checklist: [],       // [{text, done}]
+  lectures: [],        // [{name, total, done:[bool,...]}]
+  choice:[], case:[], concept:[], memo:[],
+  weekly: {0:[],1:[],2:[],3:[],4:[],5:[],6:[]}  // 요일별 [{start,end,subject,note}]
+};
 let saveTimer = null;
 let firstLoad = true;
+let currentWeekDay = 0;
 
-// ── 실시간 동기화 구독 ──
+// ── 실시간 동기화 ──
 onSnapshot(docRef, (snap) => {
   if (snap.exists()) {
     const d = snap.data();
-    state = {
-      lecture: d.lecture || [],
-      choice:  d.choice  || [],
-      case:    d.case    || [],
-      concept: d.concept || [],
-      memo:    d.memo    || [],
-      daily:   d.daily   || [],
-    };
+    state.checklist = d.checklist || [];
+    state.lectures  = d.lectures  || [];
+    state.choice    = d.choice    || [];
+    state.case      = d.case      || [];
+    state.concept   = d.concept   || [];
+    state.memo      = d.memo      || [];
+    // weekly: 키가 숫자 문자열로 저장될 수 있으므로 보정
+    const w = d.weekly || {};
+    for (let i=0;i<7;i++) state.weekly[i] = w[i] || w[String(i)] || [];
+
+    renderChecklist();
+    renderLectures();
     TRACKER_KEYS.forEach(renderSection);
-    renderDaily();
+    renderWeekDay(currentWeekDay);
     renderOverview();
   }
   if (firstLoad) {
@@ -253,23 +360,20 @@ onSnapshot(docRef, (snap) => {
 }, (err) => {
   console.error(err);
   setSyncStatus('error', '연결 오류');
-  if (firstLoad) {
-    firstLoad = false;
-    document.getElementById('loadingOverlay').classList.add('hidden');
-  }
+  if (firstLoad) { firstLoad = false; document.getElementById('loadingOverlay').classList.add('hidden'); }
 });
 
-// ── 저장 (디바운스) ──
 function scheduleSave() {
   setSyncStatus('syncing', '저장 중...');
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async () => {
     try {
-      await setDoc(docRef, state);
+      // weekly는 숫자 키를 문자열로 직렬화
+      const weekly = {};
+      for (let i=0;i<7;i++) weekly[i] = state.weekly[i]||[];
+      await setDoc(docRef, { ...state, weekly });
       setSyncStatus('synced', '✓ 동기화됨');
-    } catch(e) {
-      setSyncStatus('error', '저장 실패');
-    }
+    } catch(e) { setSyncStatus('error', '저장 실패'); }
   }, 600);
 }
 
@@ -288,7 +392,128 @@ window.showSection = (id, btn) => {
   if (id === 'overview') renderOverview();
 };
 
-// ── TRACKER ──
+// ── 체크리스트 ──
+function renderChecklist() {
+  const items = state.checklist || [];
+  const container = document.getElementById('checklist-container');
+  if (!container) return;
+  const total = items.length;
+  const done = items.filter(i=>i.done).length;
+  document.getElementById('cl-total-chip').textContent = `총 ${total}개`;
+  document.getElementById('cl-done-chip').textContent = `완료 ${done}개`;
+
+  if (total === 0) {
+    container.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text3);font-size:0.82rem;">아직 할 일이 없어요. 추가해 보세요 ✏️</div>';
+    return;
+  }
+  container.innerHTML = items.map((item, i) => `
+    <div class="checklist-item ${item.done ? 'checked-item' : ''}">
+      <div class="cl-checkbox ${item.done ? 'checked' : ''}" onclick="toggleCheckItem(${i})">${item.done ? '✓' : ''}</div>
+      <span class="cl-text" onclick="toggleCheckItem(${i})">${item.text}</span>
+      <button class="cl-del" onclick="delCheckItem(${i})">✕</button>
+    </div>`).join('');
+}
+
+window.addCheckItem = () => {
+  const inp = document.getElementById('cl-input');
+  const text = inp.value.trim();
+  if (!text) return;
+  state.checklist.push({ text, done: false });
+  inp.value = '';
+  renderChecklist(); scheduleSave();
+  showToast('할 일이 추가됐어요');
+};
+
+window.toggleCheckItem = (i) => {
+  state.checklist[i].done = !state.checklist[i].done;
+  renderChecklist(); scheduleSave();
+  showToast(state.checklist[i].done ? '✓ 완료!' : '다시 미완료로');
+};
+
+window.delCheckItem = (i) => {
+  state.checklist.splice(i, 1);
+  renderChecklist(); scheduleSave();
+};
+
+// ── 인강 해빗 트래커 ──
+function renderLectures() {
+  const container = document.getElementById('lecture-courses');
+  if (!container) return;
+  const courses = state.lectures || [];
+  container.innerHTML = '';
+
+  let totalAll = 0, doneAll = 0;
+  courses.forEach((course, ci) => {
+    const total = course.total || 0;
+    const doneCnt = (course.done || []).filter(Boolean).length;
+    totalAll += total; doneAll += doneCnt;
+
+    const div = document.createElement('div');
+    div.className = 'lecture-course';
+
+    const dotsHtml = Array.from({length: total}, (_, k) => {
+      const isDone = (course.done || [])[k];
+      return `<div class="lecture-dot ${isDone ? 'done' : ''}" onclick="toggleLectureDot(${ci},${k})">${k+1}</div>`;
+    }).join('');
+
+    div.innerHTML = `
+      <div class="lecture-course-header" onclick="toggleLectureCourse(this)">
+        <div class="lecture-course-name">
+          ${course.name}
+          <span class="lecture-course-badge">${doneCnt}/${total}</span>
+        </div>
+        <div class="lecture-course-right">
+          <button class="lecture-del-btn" onclick="event.stopPropagation();delLectureCourse(${ci})">삭제</button>
+          <span class="lecture-course-chevron open">▼</span>
+        </div>
+      </div>
+      <div class="lecture-dots-wrap">
+        <div class="lecture-dots-grid">${dotsHtml}</div>
+      </div>`;
+    container.appendChild(div);
+  });
+
+  const pct = totalAll ? Math.round(doneAll/totalAll*100) : 0;
+  const pEl = document.getElementById('lecture-pct');
+  const bEl = document.getElementById('lecture-bar');
+  if (pEl) pEl.textContent = pct + '%';
+  if (bEl) bEl.style.width = pct + '%';
+}
+
+window.addLectureCourse = () => {
+  const nameInp = document.getElementById('lecture-name-input');
+  const countInp = document.getElementById('lecture-count-input');
+  const name = nameInp.value.trim();
+  const total = parseInt(countInp.value) || 0;
+  if (!name || total < 1) { showToast('강의 이름과 강의 수를 입력해 주세요'); return; }
+  state.lectures.push({ name, total, done: Array(total).fill(false) });
+  nameInp.value = ''; countInp.value = '';
+  renderLectures(); scheduleSave();
+  showToast(`"${name}" (${total}강) 추가됐어요`);
+};
+
+window.toggleLectureDot = (ci, k) => {
+  if (!state.lectures[ci].done) state.lectures[ci].done = [];
+  state.lectures[ci].done[k] = !state.lectures[ci].done[k];
+  renderLectures(); renderOverview(); scheduleSave();
+  showToast(state.lectures[ci].done[k] ? `${k+1}강 완료!` : `${k+1}강 취소`);
+};
+
+window.toggleLectureCourse = (header) => {
+  const chevron = header.querySelector('.lecture-course-chevron');
+  const body = header.nextElementSibling;
+  const isOpen = chevron.classList.contains('open');
+  chevron.classList.toggle('open', !isOpen);
+  body.classList.toggle('lecture-dots-collapsed', isOpen);
+};
+
+window.delLectureCourse = (ci) => {
+  state.lectures.splice(ci, 1);
+  renderLectures(); renderOverview(); scheduleSave();
+  showToast('강의가 삭제됐어요');
+};
+
+// ── 일반 진도표 ──
 function renderSection(type) {
   const groups = state[type] || [];
   const container = document.getElementById(type + '-groups');
@@ -316,7 +541,7 @@ function renderSection(type) {
           </div>`).join('')}
         <div class="item-row" style="background:transparent;border:none;">
           <div class="add-row" style="width:100%;">
-            <input class="add-input" id="item-input-${type}-${gi}" placeholder="항목 추가 (Enter로 저장)" onkeydown="if(event.key==='Enter')addItem('${type}',${gi})" />
+            <input class="add-input" id="item-input-${type}-${gi}" placeholder="항목 추가 (Enter)" onkeydown="if(event.key==='Enter')addItem('${type}',${gi})" />
             <button class="add-btn" onclick="addItem('${type}',${gi})">추가</button>
           </div>
         </div>
@@ -370,64 +595,99 @@ window.addSubject = (type) => {
   showToast(`"${name}" 과목이 추가됐어요`);
 };
 
-// ── DAILY ──
-function renderDaily() {
-  const blocks = state.daily || [];
-  const container = document.getElementById('timetable-container');
-  if (!container) return;
-  container.innerHTML = '';
-  blocks.forEach((block, bi) => {
-    const div = document.createElement('div');
-    div.className = 'time-block';
-    div.innerHTML = `
-      <div class="time-block-header">
-        <span class="time-label">${block.start} ~ ${block.end}</span>
-        <input class="time-subject-input" placeholder="과목 / 내용" value="${block.subject||''}" onchange="updateBlock(${bi},'subject',this.value)" />
-        <button class="time-done-btn ${block.done?'done':''}" onclick="toggleBlockDone(${bi})">${block.done?'✓ 완료':'진행 중'}</button>
-        <button class="del-btn" style="opacity:1;" onclick="delBlock(${bi})">✕</button>
-      </div>
-      <div class="time-block-body">
-        <textarea class="time-note" rows="2" placeholder="공부한 내용, 페이지, 메모 등을 자유롭게 적어보세요..." onchange="updateBlock(${bi},'note',this.value)">${block.note||''}</textarea>
-      </div>`;
-    container.appendChild(div);
+// ── 요일별 시간표 ──
+function initWeekTabs() {
+  const now = new Date();
+  // JS getDay(): 0=일,1=월,...,6=토 → 우리 인덱스: 0=월,...,6=일
+  const jsDay = now.getDay();
+  const todayIdx = jsDay === 0 ? 6 : jsDay - 1;
+  currentWeekDay = todayIdx;
+
+  const tabs = document.querySelectorAll('.week-tab');
+  tabs.forEach((tab, i) => {
+    if (i === todayIdx) tab.classList.add('today');
+    if (i === todayIdx) tab.classList.add('active');
   });
 }
 
+window.selectWeekDay = (dayIdx, btn) => {
+  currentWeekDay = dayIdx;
+  document.querySelectorAll('.week-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderWeekDay(dayIdx);
+};
+
+function renderWeekDay(dayIdx) {
+  const blocks = state.weekly[dayIdx] || [];
+  const container = document.getElementById('timetable-container');
+  if (!container) return;
+  if (blocks.length === 0) {
+    container.innerHTML = `<div class="timetable-empty">${DAY_NAMES[dayIdx]}요일 일정이 없어요. 위에서 추가해 보세요 📋</div>`;
+    return;
+  }
+  container.innerHTML = blocks.map((block, bi) => `
+    <div class="time-block">
+      <div class="time-block-header">
+        <span class="time-label">${block.start} ~ ${block.end}</span>
+        <input class="time-subject-input" placeholder="과목 / 내용" value="${escHtml(block.subject||'')}" onchange="updateWeekBlock(${dayIdx},${bi},'subject',this.value)" />
+        <button class="del-btn" style="opacity:1;color:var(--text3);" onclick="delWeekBlock(${dayIdx},${bi})">✕</button>
+      </div>
+      <div class="time-block-body">
+        <textarea class="time-note" rows="2" placeholder="메모..." onchange="updateWeekBlock(${dayIdx},${bi},'note',this.value)">${escHtml(block.note||'')}</textarea>
+      </div>
+    </div>`).join('');
+}
+
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
 window.addTimeBlock = () => {
   const start = document.getElementById('time-start').value;
-  const end = document.getElementById('time-end').value;
-  if (!start||!end) return;
-  if (!state.daily) state.daily = [];
-  state.daily.push({start, end, subject:'', note:'', done:false});
-  renderDaily(); scheduleSave();
-  showToast(`${start}~${end} 블록 추가됐어요`);
+  const end   = document.getElementById('time-end').value;
+  const subject = document.getElementById('time-subject').value.trim();
+  if (!start || !end) { showToast('시작/종료 시간을 입력해 주세요'); return; }
+  if (!state.weekly[currentWeekDay]) state.weekly[currentWeekDay] = [];
+  state.weekly[currentWeekDay].push({ start, end, subject, note: '' });
+  // 시간 순 정렬
+  state.weekly[currentWeekDay].sort((a,b) => a.start.localeCompare(b.start));
+  document.getElementById('time-subject').value = '';
+  renderWeekDay(currentWeekDay); scheduleSave();
+  showToast(`${DAY_NAMES[currentWeekDay]}요일 ${start}~${end} 추가됐어요`);
 };
 
-window.updateBlock = (bi, field, val) => {
-  state.daily[bi][field] = val; scheduleSave();
+window.updateWeekBlock = (dayIdx, bi, field, val) => {
+  state.weekly[dayIdx][bi][field] = val; scheduleSave();
 };
 
-window.toggleBlockDone = (bi) => {
-  state.daily[bi].done = !state.daily[bi].done;
-  renderDaily(); renderOverview(); scheduleSave();
-  showToast(state.daily[bi].done ? '✓ 완료!' : '진행 중으로 변경');
+window.delWeekBlock = (dayIdx, bi) => {
+  state.weekly[dayIdx].splice(bi, 1);
+  renderWeekDay(dayIdx); scheduleSave();
+  showToast('시간 블록이 삭제됐어요');
 };
 
-window.delBlock = (bi) => {
-  state.daily.splice(bi,1); renderDaily(); renderOverview(); scheduleSave();
-};
-
-// ── OVERVIEW ──
+// ── 전체 현황 ──
 function renderOverview() {
   const grid = document.getElementById('overviewGrid');
   if (!grid) return;
-  const labels = {lecture:'인강 진도', choice:'선택형', case:'사례형', concept:'개념서', memo:'암기장'};
-  let html = '';
+
+  // 인강
+  const lecs = state.lectures || [];
+  let lecTotal = 0, lecDone = 0;
+  lecs.forEach(c => { lecTotal += c.total||0; lecDone += (c.done||[]).filter(Boolean).length; });
+  const lecPct = lecTotal ? Math.round(lecDone/lecTotal*100) : 0;
+
+  const labels = {choice:'선택형', case:'사례형', concept:'개념서', memo:'암기장'};
+  let html = `<div class="ov-card">
+    <div class="ov-pct">${lecPct}<span style="font-size:0.9rem">%</span></div>
+    <div class="ov-label">인강 진도</div>
+    <div class="ov-bar"><div class="ov-fill" style="width:${lecPct}%"></div></div>
+    <div style="font-size:0.65rem;color:var(--text3);margin-top:0.4rem;font-family:'DM Mono',monospace;">${lecDone}/${lecTotal}</div>
+  </div>`;
+
   TRACKER_KEYS.forEach(type => {
     const groups = state[type]||[];
-    let total=0,done=0;
+    let total=0, done=0;
     groups.forEach(g=>{total+=g.items.length; done+=g.items.filter(i=>i.done).length;});
-    const pct = total?Math.round(done/total*100):0;
+    const pct = total ? Math.round(done/total*100) : 0;
     html += `<div class="ov-card">
       <div class="ov-pct">${pct}<span style="font-size:0.9rem">%</span></div>
       <div class="ov-label">${labels[type]}</div>
@@ -435,15 +695,18 @@ function renderOverview() {
       <div style="font-size:0.65rem;color:var(--text3);margin-top:0.4rem;font-family:'DM Mono',monospace;">${done}/${total}</div>
     </div>`;
   });
-  const db2 = state.daily||[];
-  const dDone = db2.filter(b=>b.done).length;
-  const dPct = db2.length?Math.round(dDone/db2.length*100):0;
+
+  // 오늘 할 일
+  const cl = state.checklist||[];
+  const clDone = cl.filter(i=>i.done).length;
+  const clPct = cl.length ? Math.round(clDone/cl.length*100) : 0;
   html += `<div class="ov-card">
-    <div class="ov-pct">${dPct}<span style="font-size:0.9rem">%</span></div>
-    <div class="ov-label">오늘 시간표</div>
-    <div class="ov-bar"><div class="ov-fill" style="width:${dPct}%"></div></div>
-    <div style="font-size:0.65rem;color:var(--text3);margin-top:0.4rem;font-family:'DM Mono',monospace;">${dDone}/${db2.length}</div>
+    <div class="ov-pct">${clPct}<span style="font-size:0.9rem">%</span></div>
+    <div class="ov-label">오늘 할 일</div>
+    <div class="ov-bar"><div class="ov-fill" style="width:${clPct}%"></div></div>
+    <div style="font-size:0.65rem;color:var(--text3);margin-top:0.4rem;font-family:'DM Mono',monospace;">${clDone}/${cl.length}</div>
   </div>`;
+
   grid.innerHTML = html;
 }
 
@@ -456,11 +719,15 @@ window.showToast = (msg) => {
   toastTimer = setTimeout(()=>t.classList.remove('show'), 1800);
 };
 
-// ── DATE ──
+// ── 날짜 초기화 ──
 const now = new Date();
 const days = ['일','월','화','수','목','금','토'];
-document.getElementById('todayInfo').textContent =
-  `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} (${days[now.getDay()]})`;
+const dateStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} (${days[now.getDay()]})`;
+document.getElementById('todayInfo').textContent = dateStr;
+const clDateBadge = document.getElementById('cl-date-badge');
+if (clDateBadge) clDateBadge.textContent = dateStr;
+
+initWeekTabs();
 </script>
 </body>
 </html>
